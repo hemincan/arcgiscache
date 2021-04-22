@@ -121,13 +121,14 @@ public class AgsOffTilesServiceServlet extends HttpServlet {
 		            isBundlx.close();
 	            }
 	            else{
-	            	byte[] blankImg = Base64.decodeBase64(base64Blank);
-	            	InputStream is = new ByteArrayInputStream(blankImg); 
-	            	int count=0;
-	            	while ((count = is.read(blankImg)) != -1) {
-	                    output = blankImg;
-		                outlength = count;
-	                }
+
+//	            	byte[] blankImg = Base64.decodeBase64(base64Blank);
+//	            	InputStream is = new ByteArrayInputStream(blankImg); 
+//	            	int count=0;
+//	            	while ((count = is.read(blankImg)) != -1) {
+//	                    output = blankImg;
+//		                outlength = count;
+//	                }
 	            }
         	}
         	else{//À……¢–Õ
@@ -165,7 +166,12 @@ public class AgsOffTilesServiceServlet extends HttpServlet {
 	                outlength = count;
                 }
         	}
-        	os.write(output, 0, outlength);
+        	if(output==null) {
+        		response.setStatus(404);
+        	}else {
+        		os.write(output, 0, outlength);
+        	}
+        	
         	os.flush();
             os.close();
         }
