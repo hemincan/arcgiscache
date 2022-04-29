@@ -10,8 +10,18 @@
   	<description></description>
   	<servlet-class>servlet.AgsOffTilesServiceServlet</servlet-class>
   </servlet>
+  <servlet>
+  	<servlet-name>ss</servlet-name>
+  	<display-name>ss</display-name>
+  	<description></description>
+  	<servlet-class>ssss.ss</servlet-class>
+  </servlet>
   <servlet-mapping>
   	<servlet-name>AgsOffTilesServiceServlet</servlet-name>
   	<url-pattern>/AgsOffTilesServiceServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+  	<servlet-name>ss</servlet-name>
+  	<url-pattern>/ss</url-pattern>
   </servlet-mapping>
 </web-app>

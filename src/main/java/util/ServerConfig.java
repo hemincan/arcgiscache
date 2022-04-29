@@ -17,6 +17,15 @@ public  class ServerConfig {
 	
 	private static String arcgisBasePath;
 	
+	private static String mbtilesBasePath;
+	
+	public static String getMbtilesBasePath() {
+		if(mbtilesBasePath == null){
+			mbtilesBasePath = getProper("mbtilesBasePath");
+		}		
+		return mbtilesBasePath;
+	}
+	
 	public static String getArcgisBasePath() {
 		if(arcgisBasePath == null){
 			arcgisBasePath = getProper("arcgisBasePath");

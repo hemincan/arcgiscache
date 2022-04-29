@@ -30,6 +30,21 @@ for (File temp : fileDirectory.listFiles()) {
 	}
 }
 
+out.println("<br/>mbtiles路径："+ServerConfig.getMbtilesBasePath()+"<br/>");
+
+String mbtilepath = ServerConfig.getMbtilesBasePath();
+File fileDirectorymbtile = new File(mbtilepath);
+
+for (File temp : fileDirectorymbtile.listFiles()) {
+	//out.println("<br/>"+temp.getAbsolutePath());
+	if (!temp.isDirectory()) {
+		
+		String str = temp.toString();
+		String layerName = str.split("\\\\")[str.split("\\\\").length-1];
+		out.println(layerName+""+""+"（"+basePath+"mbtiles?layer="+layerName+"&x={x}&y={reverseY}&z={z}）");
+		out.println("<br/>");
+	}
+}
 %>   
 </body>
 </html>
