@@ -171,12 +171,34 @@ public class MBTilesUtils {
 			connect.setAutoCommit(false);
 			Statement stmt = connect.createStatement();
 			System.err.println(bytes.length());
-			String sql = "update  tiles  set tile_data = X'" + bytes + "' where zoom_level= " + zoom_level
+			String sql = "update  tiles  set tile_data = X'" + bytes + "',status='200' where zoom_level= " + zoom_level
 					+ " and tile_row=" + tile_row + " and tile_column=" + tile_column;
 			int count = stmt.executeUpdate(sql);
 //			System.err.println(sql);
 			if (count > 0) {
 				System.out.println("update data success");
+			} else {
+				System.out.println("update data fail");
+			}
+			connect.commit();
+
+			stmt.close();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public  void update405(Connection connect, Integer tile_column, Integer tile_row, Integer zoom_level, String status) {
+		try {
+			connect.setAutoCommit(false);
+			Statement stmt = connect.createStatement();
+			
+			String sql = "update  tiles  set status = '" + status + "',tile_data = null where zoom_level= " + zoom_level
+					+ " and tile_row=" + tile_row + " and tile_column=" + tile_column;
+			int count = stmt.executeUpdate(sql);
+//			System.err.println(sql);
+			if (count > 0) {
+				System.out.println("update "+status+" success");
 			} else {
 				System.out.println("update data fail");
 			}
@@ -217,16 +239,24 @@ public class MBTilesUtils {
 		levelMaxYSize.put(18, 262144);
 		levelMaxYSize.put(19, 524288);
 
-		MBTilesUtils mbtile = new MBTilesUtils("M:\\sssss\\广西各市\\地名地址\\1.mbtiles");
-		for (int i = 1; i < 20000; i++) {
-			
+		MBTilesUtils mbtile = new MBTilesUtils("M:\\sssss\\广西各市\\地名地址\\test16_1.mbtiles");
+		for (int i = 0; i < 20000; i++) {
+//			try {
+//				
+//					Thread.sleep(5000);
+//				
+//				
+//			} catch (InterruptedException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
 			Random random = new Random();
 			Statement stmt;
 			try {
 				stmt = mbtile.getConn().createStatement();
 				ResultSet rs = stmt
-						.executeQuery("SELECT * from tiles where LENGTH(tile_data)=1246 ORDER BY zoom_level asc LIMIT "
-								+ i + ",100;");
+						.executeQuery("SELECT * from tiles where status is null  ORDER BY zoom_level desc LIMIT "
+								+ 100 + " offset "+100*i+";");
 				while (rs.next()) {
 					int zoom_level = rs.getInt("zoom_level");
 					int tile_row = rs.getInt("tile_row");
@@ -243,17 +273,25 @@ public class MBTilesUtils {
 							+ "&style=default.jpg&tk=d12861d485701e869992f652021881a7";
 //					String url = "http://t1.tianditu.com/cia_w/wmts?service=wmts&request=GetTile&version=1.0.0&LAYER=cia&tileMatrixSet=w&TileMatrix=12&TileRow=1780&TileCol=3276&style=default.jpg&tk=d12861d485701e869992f652021881a7";
 //					System.err.println(url);
+					boolean is405 = false;
 					try {
 						String bytehex = HttpURLConnectionUtil.doPost(url, "");
 //						System.err.println(bytehex);
+						if(bytehex.length()>5) {
+							mbtile.update(mbtile.getConn(), tile_column, tile_row_org, zoom_level, bytehex);
+						}else {
+							mbtile.update405(mbtile.getConn(), tile_column, tile_row_org, zoom_level, bytehex);
+						}
 						
-						mbtile.update(mbtile.getConn(), tile_column, tile_row_org, zoom_level, bytehex);
 					} catch (Exception e) {
 						// TODO: handle exception
-//						e.printStackTrace();
+						e.printStackTrace();
+						is405=true;
+						
 					}
 					try {
-						Thread.sleep(1000);
+						Thread.sleep(300);
+						
 					} catch (InterruptedException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

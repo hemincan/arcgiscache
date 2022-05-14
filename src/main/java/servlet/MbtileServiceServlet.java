@@ -2,7 +2,9 @@ package servlet;
 
 
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +14,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.codec.binary.Base64;
 
 import util.MBTilesUtils;
 import util.ServerConfig;
@@ -76,10 +80,23 @@ public class MbtileServiceServlet extends HttpServlet {
 		OutputStream os = response.getOutputStream();
 		byte[] output = null;
 		int outlength = 0;
-		output = b;
-		outlength = b.length;
+		if(b==null) {
+			byte[] blankImg = Base64.decodeBase64(base64Blank);
+			InputStream is = new ByteArrayInputStream(blankImg);
+			int count = 0;
+			while ((count = is.read(blankImg)) != -1) {
+				output = blankImg;
+				outlength = count;
+			}
+			os.write(output, 0, outlength);
+		}else {
+			output = b;
+			outlength = b.length;
+			os.write(output, 0, outlength);
+		}
 		
-		os.write(output, 0, outlength);
+		
+		
 		os.flush();
 		os.close();
 	}

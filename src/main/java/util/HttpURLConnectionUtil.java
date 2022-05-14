@@ -139,6 +139,8 @@ public class HttpURLConnectionUtil {
 				
 //				System.err.println();
 				result = bytes2Hex(in2b);
+			}else {
+				result = connection.getResponseCode()+"";
 			}
 
 		} catch (MalformedURLException e) {
