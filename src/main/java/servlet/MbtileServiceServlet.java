@@ -57,12 +57,23 @@ public class MbtileServiceServlet extends HttpServlet {
 		if (response.getHeader("Access-Control-Allow-Origin") == null) {
 			response.addHeader("Access-Control-Allow-Origin", "*");
 		}
+		
+		long maxAgeInSeconds = 3600*24*30;
+		// 设置缓存控制头部，如"Cache-Control: max-age=3600"
+	    response.setHeader("Cache-Control", "public,max-age=" + maxAgeInSeconds);
+	 
+	    // 设置过期时间头部，如"Expires: Thu, 01 Dec 1994 16:00:00 GMT"
+	    long expiresTime = System.currentTimeMillis() + maxAgeInSeconds * 1000;
+	    response.setDateHeader("Expires", expiresTime);
+		
 //		System.err.println("?????????????????");
 		// TODO Auto-generated method stub
 		String x = request.getParameter("x");
 		String y = request.getParameter("y");
 		String z = request.getParameter("z");
 		String layer = request.getParameter("layer");
+//		无瓦片时返回什么，可以设置返回404
+		String notFound404 = request.getParameter("notFound404");
 		MBTilesUtils mbtile = null;
 		if(layer2Mbtile.containsKey(layer)) {
 			 mbtile = layer2Mbtile.get(layer);
@@ -81,14 +92,19 @@ public class MbtileServiceServlet extends HttpServlet {
 		byte[] output = null;
 		int outlength = 0;
 		if(b==null) {
-			byte[] blankImg = Base64.decodeBase64(base64Blank);
-			InputStream is = new ByteArrayInputStream(blankImg);
-			int count = 0;
-			while ((count = is.read(blankImg)) != -1) {
-				output = blankImg;
-				outlength = count;
+			if("yes".equals(notFound404)) {
+//				客户端要求瓦片为空时返回404
+				response.sendError(404);
+			}else {
+				byte[] blankImg = Base64.decodeBase64(base64Blank);
+				InputStream is = new ByteArrayInputStream(blankImg);
+				int count = 0;
+				while ((count = is.read(blankImg)) != -1) {
+					output = blankImg;
+					outlength = count;
+				}
+				os.write(output, 0, outlength);
 			}
-			os.write(output, 0, outlength);
 		}else {
 			output = b;
 			outlength = b.length;

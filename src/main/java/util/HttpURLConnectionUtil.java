@@ -2,11 +2,21 @@ package util;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Iterator;
+
+import org.apache.http.HttpHost;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 
 /**
  * @author riemann
@@ -15,30 +25,30 @@ import java.util.Iterator;
 public class HttpURLConnectionUtil {
 
 	/**
-	 * Http getÇëÇó
+	 * Http getï¿½ï¿½ï¿½ï¿½
 	 * 
-	 * @param httpUrl Á¬½Ó
-	 * @return ÏìÓ¦Êý¾Ý
+	 * @param httpUrl ï¿½ï¿½ï¿½ï¿½
+	 * @return ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
 	 */
 	public static String doGet(String httpUrl) {
-		// Á´½Ó
+		// ï¿½ï¿½ï¿½ï¿½
 		HttpURLConnection connection = null;
 		InputStream is = null;
 		BufferedReader br = null;
 		StringBuffer result = new StringBuffer();
 		try {
-			// ´´½¨Á¬½Ó
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			URL url = new URL(httpUrl);
 			connection = (HttpURLConnection) url.openConnection();
-			// ÉèÖÃÇëÇó·½Ê½
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
 			connection.setRequestMethod("GET");
-			// ÉèÖÃÁ¬½Ó³¬Ê±Ê±¼ä
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½Ê±Ê±ï¿½ï¿½
 			connection.setReadTimeout(15000);
-			// ¿ªÊ¼Á¬½Ó
+			// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
 			connection.connect();
-			// »ñÈ¡ÏìÓ¦Êý¾Ý
+			// ï¿½ï¿½È¡ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
 			if (connection.getResponseCode() == 200) {
-				// »ñÈ¡·µ»ØµÄÊý¾Ý
+				// ï¿½ï¿½È¡ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½
 				is = connection.getInputStream();
 				if (null != is) {
 					br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -65,42 +75,42 @@ public class HttpURLConnectionUtil {
 					e.printStackTrace();
 				}
 			}
-			// ¹Ø±ÕÔ¶³ÌÁ¬½Ó
+			// ï¿½Ø±ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			connection.disconnect();
 		}
 		return result.toString();
 	}
 
 	/**
-	 * Http postÇëÇó
+	 * Http postï¿½ï¿½ï¿½ï¿½
 	 * 
-	 * @param httpUrl Á¬½Ó
-	 * @param param   ²ÎÊý
+	 * @param httpUrl ï¿½ï¿½ï¿½ï¿½
+	 * @param param   ï¿½ï¿½ï¿½ï¿½
 	 * @return
 	 */
 	public static String doPost(String httpUrl, String param) {
 		String result = null;
-		// Á¬½Ó
+		// ï¿½ï¿½ï¿½ï¿½
 		HttpURLConnection connection = null;
 		OutputStream os = null;
 		InputStream is = null;
 		BufferedReader br = null;
 		try {
-			// ´´½¨Á¬½Ó¶ÔÏó
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½
 			URL url = new URL(httpUrl);
-			// ´´½¨Á¬½Ó
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			connection = (HttpURLConnection) url.openConnection();
-			// ÉèÖÃÇëÇó·½·¨
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó·½·ï¿½
 			connection.setRequestMethod("POST");
-			// ÉèÖÃÁ¬½Ó³¬Ê±Ê±¼ä
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½Ê±Ê±ï¿½ï¿½
 			connection.setConnectTimeout(15000);
-			// ÉèÖÃ¶ÁÈ¡³¬Ê±Ê±¼ä
+			// ï¿½ï¿½ï¿½Ã¶ï¿½È¡ï¿½ï¿½Ê±Ê±ï¿½ï¿½
 			connection.setReadTimeout(15000);
-			// DoOutputÉèÖÃÊÇ·ñÏòhttpUrlConnectionÊä³ö£¬DoInputÉèÖÃÊÇ·ñ´ÓhttpUrlConnection¶ÁÈë£¬´ËÍâ·¢ËÍpostÇëÇó±ØÐëÉèÖÃÕâÁ½¸ö
-			// ÉèÖÃÊÇ·ñ¿É¶ÁÈ¡
+			// DoOutputï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½httpUrlConnectionï¿½ï¿½ï¿½ï¿½ï¿½DoInputï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½httpUrlConnectionï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½â·¢ï¿½ï¿½postï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			// ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½É¶ï¿½È¡
 			connection.setDoOutput(true);
 			connection.setDoInput(true);
-			// ÉèÖÃÍ¨ÓÃµÄÇëÇóÊôÐÔ
+			// ï¿½ï¿½ï¿½ï¿½Í¨ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 //            connection.setRequestProperty("accept", "*/*");
 			connection.setRequestProperty("connection", "Keep-Alive");
 			connection.setRequestProperty("user-agent",
@@ -110,18 +120,18 @@ public class HttpURLConnectionUtil {
 					"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
 			connection.setRequestProperty("Accept-Encoding", "gzip, deflate");
 
-			// Æ´×°²ÎÊý
+			// Æ´×°ï¿½ï¿½ï¿½ï¿½
 			if (null != param && param.equals("")) {
-				// ÉèÖÃ²ÎÊý
+				// ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½
 				os = connection.getOutputStream();
-				// Æ´×°²ÎÊý
+				// Æ´×°ï¿½ï¿½ï¿½ï¿½
 				os.write(param.getBytes("UTF-8"));
 			}
-			// ÉèÖÃÈ¨ÏÞ
-			// ÉèÖÃÇëÇóÍ·µÈ
-			// ¿ªÆôÁ¬½Ó
+			// ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½
+			// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			// connection.connect();
-			// ¶ÁÈ¡ÏìÓ¦
+			// ï¿½ï¿½È¡ï¿½ï¿½Ó¦
 			System.err.println(connection.getResponseCode());
 			if (connection.getResponseCode() == 200) {
 				is = connection.getInputStream();
@@ -136,11 +146,11 @@ public class HttpURLConnectionUtil {
 //					System.err.println(in2b[i]);
 //				}
 //				String strString = new String(in2b);
-				
+
 //				System.err.println();
 				result = bytes2Hex(in2b);
-			}else {
-				result = connection.getResponseCode()+"";
+			} else {
+				result = connection.getResponseCode() + "";
 			}
 
 		} catch (MalformedURLException e) {
@@ -148,7 +158,7 @@ public class HttpURLConnectionUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			// ¹Ø±ÕÁ¬½Ó
+			// ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½
 			if (br != null) {
 				try {
 					br.close();
@@ -170,8 +180,91 @@ public class HttpURLConnectionUtil {
 					e.printStackTrace();
 				}
 			}
-			// ¹Ø±ÕÁ¬½Ó
+			// ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½
 			connection.disconnect();
+		}
+		return result.toString();
+	}
+
+	public static String doPostProxy(String httpUrl, String param, String proxyIp, int proxyPort) {
+		String result = null;
+		// ï¿½ï¿½ï¿½ï¿½
+		HttpURLConnection connection = null;
+		OutputStream os = null;
+		InputStream is = null;
+		BufferedReader br = null;
+		HttpGet httpget =null;
+		try {
+
+
+			HttpHost proxy222 = new HttpHost(proxyIp, proxyPort, "HTTP");
+
+			RequestConfig defaultRequestConfig = RequestConfig.custom().setProxy(proxy222).build();
+
+			// å®žä¾‹åŒ–CloseableHttpClientå¯¹è±¡
+			CloseableHttpClient httpclient2 = HttpClients.custom().setDefaultRequestConfig(defaultRequestConfig).build();
+
+			httpget = new HttpGet(
+					httpUrl);
+			
+//			httpget.setHeader("User-Agent",
+//					"Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36");
+//			httpget.setHeader("Proxy-Connection", "Keep-Alive");
+//			httpget.setHeader("Accept",
+//					"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7");
+//			httpget.setHeader("Accept-Encoding", "gzip, deflate");
+//			httpget.setHeader("Accept-Language", "zh-CN,zh;q=0.9");
+
+			CloseableHttpResponse response = httpclient2.execute(httpget);
+			System.out.println(response.getStatusLine().getStatusCode());
+
+			if (response.getStatusLine().getStatusCode() == 200) {
+				is = response.getEntity().getContent();
+				ByteArrayOutputStream swapStream = new ByteArrayOutputStream();
+				byte[] buff = new byte[100];
+				int rc = 0;
+				while ((rc = is.read(buff, 0, 100)) > 0) {
+					swapStream.write(buff, 0, rc);
+				}
+				byte[] in2b = swapStream.toByteArray();
+
+				result = bytes2Hex(in2b);
+			} else {
+				result = response.getStatusLine().getStatusCode() + "";
+			}
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			// ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (os != null) {
+				try {
+					os.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			// ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½
+			if(httpget!=null) {
+				httpget.releaseConnection();
+			}
+			
 		}
 		return result.toString();
 	}
@@ -181,11 +274,11 @@ public class HttpURLConnectionUtil {
 			return null;
 		}
 
-		char[] res = new char[src.length * 2]; // Ã¿¸öbyte¶ÔÓ¦Á½¸ö×Ö·û
+		char[] res = new char[src.length * 2]; // Ã¿ï¿½ï¿½byteï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½
 		final char hexDigits[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 		for (int i = 0, j = 0; i < src.length; i++) {
-			res[j++] = hexDigits[src[i] >> 4 & 0x0f]; // ÏÈ´æbyteµÄ¸ß4Î»
-			res[j++] = hexDigits[src[i] & 0x0f]; // ÔÙ´æbyteµÄµÍ4Î»
+			res[j++] = hexDigits[src[i] >> 4 & 0x0f]; // ï¿½È´ï¿½byteï¿½Ä¸ï¿½4Î»
+			res[j++] = hexDigits[src[i] & 0x0f]; // ï¿½Ù´ï¿½byteï¿½Äµï¿½4Î»
 		}
 
 		return new String(res);

@@ -53,14 +53,23 @@ public class AgsOffTilesServiceServlet extends HttpServlet {
 		if (response.getHeader("Access-Control-Allow-Origin") == null) {
 			response.addHeader("Access-Control-Allow-Origin", "*");
 		}
+		
+		long maxAgeInSeconds = 3600*24*30;
+		// è®¾ç½®ç¼“å­˜æŽ§åˆ¶å¤´éƒ¨ï¼Œå¦‚"Cache-Control: max-age=3600"
+	    response.setHeader("Cache-Control", "public,max-age=" + maxAgeInSeconds);
+	 
+	    // è®¾ç½®è¿‡æœŸæ—¶é—´å¤´éƒ¨ï¼Œå¦‚"Expires: Thu, 01 Dec 1994 16:00:00 GMT"
+	    long expiresTime = System.currentTimeMillis() + maxAgeInSeconds * 1000;
+	    response.setDateHeader("Expires", expiresTime);
+		
 
 		// TODO Auto-generated method stub
 		String x = request.getParameter("x");
 		String y = request.getParameter("y");
 		String z = request.getParameter("z");
 		String layer = request.getParameter("layer");
-		String type = request.getParameter("type");// fileÎª½ô´ÕÐÍ£¬imageÎªËÉÉ¢ÐÍ
-		String notFound404 = request.getParameter("notFound404");// fileÎª½ô´ÕÐÍ£¬imageÎªËÉÉ¢ÐÍ
+		String type = request.getParameter("type");// fileÎªï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½imageÎªï¿½ï¿½É¢ï¿½ï¿½
+		String notFound404 = request.getParameter("notFound404");// fileÎªï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½imageÎªï¿½ï¿½É¢ï¿½ï¿½
 		if (x == null || y == null || z == null) {
 			response.getWriter().write("please provide xyz");
 			return;
@@ -74,11 +83,11 @@ public class AgsOffTilesServiceServlet extends HttpServlet {
 //        String tilePath = rootPath+layer+"/Layers/_alllayers";
 		String tilePath = basePath + "/" + layer + "/Layers";
 		if (!new File(tilePath).exists()) {
-			tilePath = basePath + "/" + layer + "/Í¼²ã";
+			tilePath = basePath + "/" + layer + "/å›¾å±‚";
 		}
 		if (!new File(tilePath).exists()) {
 			response.setContentType("text/html;charset=utf-8");
-			response.getWriter().write(layer + " no contains 'Layers or Í¼²ã' ÎÄ¼þ¼Ð");
+			response.getWriter().write(layer + " no contains Layers or å›¾å±‚");
 			return;
 		}
 //       
@@ -90,7 +99,7 @@ public class AgsOffTilesServiceServlet extends HttpServlet {
 			OutputStream os = response.getOutputStream();
 			byte[] output = null;
 			int outlength = 0;
-			if (type == null) {// ½ô´ÕÐÍ
+			if (type == null) {// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 				String l = "L" + getZero(2, z.length()) + level;
 
 				int rGroup = 128 * (row / 128);
@@ -155,7 +164,7 @@ public class AgsOffTilesServiceServlet extends HttpServlet {
 						outlength = count;
 					}
 				}
-			} else {// ËÉÉ¢ÐÍ
+			} else {// ï¿½ï¿½É¢ï¿½ï¿½
 				String l = "L" + getZero(2, z.length()) + level;
 
 				String strRow = Integer.toHexString(row);
