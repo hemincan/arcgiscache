@@ -366,9 +366,9 @@ public class MBTilesUtils {
 						tile_row = (maxY - tile_row - 1);
 						System.out.println(zoom_level + "  " + tile_row + "  " + tile_column);
 						Integer server = random.nextInt(3);
-//						String url = "http://mt"+server+".google.com/vt/lyrs=s&hl=en&x="+tile_column+"&y="+tile_row+"&z="+zoom_level+"";
+						String url = "http://mt"+server+".google.com/vt/lyrs=s&hl=en&x="+tile_column+"&y="+tile_row+"&z="+zoom_level+"";
 						
-						String url = "http://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&x="+tile_column+"&y="+tile_row+"&z="+zoom_level+"";
+//						String url = "http://gac-geo.googlecnapps.cn/maps/vt?lyrs=s&x="+tile_column+"&y="+tile_row+"&z="+zoom_level+"";
 						System.out.println(list.size()+":"+url);
 						boolean is405 = false;
 						try {
